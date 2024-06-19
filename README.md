@@ -1,2 +1,2 @@
 # No-Name-MD
-WhatsApp not created with up-to-date technology
+WhatsApp bot created with up-to-date technology
