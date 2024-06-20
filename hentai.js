@@ -1,94 +1,188 @@
-// Importez dotenv et chargez les variables d'environnement depuis le fichier .env
-require("dotenv").config();
 
-const { Pool } = require("pg");
+const {zokou } = require("../framework/zokou");
+const axios = require('axios');
+const cheerio = require('cheerio');
+let func = require('../framework/mesfonctions') ;
+let hdb = require('../bdd/hentai') ;
 
-// Utilisez le module 'set' pour obtenir la valeur de DATABASE_URL depuis vos configurations
-const s = require("../set");
 
-// Récupérez l'URL de la base de données de la variable s.DATABASE_URL
-var dbUrl = s.DATABASE_URL ? s.DATABASE_URL : "postgres://db_7xp9_user:6hwmTN7rGPNsjlBEHyX49CXwrG7cDeYi@dpg-cj7ldu5jeehc73b2p7g0-a.oregon-postgres.render.com/db_7xp9";
-const proConfig = {
-  connectionString: dbUrl,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-};
+zokou({
+  nomCom: "hwaifu",
+  categorie: "Hentai",
+  reaction: "🙄"
+},
+async (origineMessage, zk, commandeOptions) => {
+  const { repondre, ms ,verifGroupe , superUser} = commandeOptions;
 
-// Créez une pool de connexions PostgreSQL
-const pool = new Pool(proConfig);
+   if (!verifGroupe && !superUser ) { repondre(`This command is reserved for groups only.`) ; return ;}
+   
+    let isHentaiGroupe = await hdb.checkFromHentaiList(origineMessage) ;
 
-// Fonction pour créer la table "hentai"
-const creerTableHentai = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS hentai (
-        groupeJid text PRIMARY KEY
-      );
-    `);
-    console.log("La table 'hentai' avec 'groupeJid' comme clé primaire a été créée avec succès.");
-  } catch (e) {
-    console.error("Une erreur est survenue lors de la création de la table 'hentai':", e);
-  }
-};
+    if(!isHentaiGroupe && !superUser) { repondre(`This group is not a group of perverts, calm down my friend.`) ; return ;}
 
-// Appelez la méthode pour créer la table "hentai" avec 'groupeJid' comme clé primaire
-creerTableHentai();
+  const url = 'https://api.waifu.pics/nsfw/waifu'; // Remplace avec ton lien réel
 
-// Fonction pour ajouter un groupe à la liste de hentai
-async function addToHentaiList(groupeJid) {
-  const client = await pool.connect();
-  try {
-    // Insérez le groupe dans la table "hentai"
-    const query = "INSERT INTO hentai (groupeJid) VALUES ($1)";
-    const values = [groupeJid];
+  try { for (let i = 0 ; i < 5 ; i++ ) {
+    const response = await axios.get(url);
+    const imageUrl = response.data.url;
 
-    await client.query(query, values);
-    console.log(`Le groupe JID ${groupeJid} a été ajouté à la liste de hentai.`);
+    zk.sendMessage(origineMessage, { image: { url: imageUrl } }, { quoted: ms }); }
   } catch (error) {
-    console.error("Erreur lors de l'ajout du groupe à la liste de hentai :", error);
-  } finally {
-    client.release();
+    repondre('Error occurred while retrieving the data. : ' +error);
   }
-}
+});
 
-// Fonction pour vérifier si un groupe est dans la liste de hentai
-async function checkFromHentaiList(groupeJid) {
-  const client = await pool.connect();
-  try {
-    // Vérifiez si le groupe existe dans la table "hentai"
-    const query = "SELECT EXISTS (SELECT 1 FROM hentai WHERE groupeJid = $1)";
-    const values = [groupeJid];
 
-    const result = await client.query(query, values);
-    return result.rows[0].exists;
+  /////////////// hneko //////////
+zokou({
+  nomCom: "trap",
+  categorie: "Hentai",
+  reaction: "🙄"
+},
+async (origineMessage, zk, commandeOptions) => {
+  
+  const { repondre, ms ,verifGroupe , superUser} = commandeOptions;
+
+   if (!verifGroupe && !superUser ) { repondre(`This command is reserved for groups only.`) ; return ;}
+   
+  let isHentaiGroupe = await hdb.checkFromHentaiList(origineMessage) ;
+
+  if(!isHentaiGroupe && !superUser) { repondre(`This group is not a group of perverts, calm down my friend.`) ; return ;}
+
+
+  const url = 'https://api.waifu.pics/nsfw/trap'; // Remplace avec ton lien réel
+
+  try { for (let i = 0 ; i < 5 ; i++ ) {
+    const response = await axios.get(url);
+    const imageUrl = response.data.url;
+
+    zk.sendMessage(origineMessage, { image: { url: imageUrl } }, { quoted: ms }); }
   } catch (error) {
-    console.error("Erreur lors de la vérification de la présence du groupe dans la liste de hentai :", error);
-    return false;
-  } finally {
-    client.release();
+    repondre('Error occurred while retrieving the data. :', error);
   }
-}
+});
 
-// Fonction pour supprimer un groupe de la liste de hentai
-async function removeFromHentaiList(groupeJid) {
-  const client = await pool.connect();
-  try {
-    // Supprimez le groupe de la table "hentai"
-    const query = "DELETE FROM hentai WHERE groupeJid = $1";
-    const values = [groupeJid];
+zokou({
+  nomCom: "hneko",
+  categorie: "Hentai",
+  reaction: "🙄"
+},
+async (origineMessage, zk, commandeOptions) => {
+  
+  const { repondre, ms ,verifGroupe , superUser} = commandeOptions;
 
-    await client.query(query, values);
-    console.log(`Le groupe JID ${groupeJid} a été supprimé de la liste de hentai.`);
+  if (!verifGroupe && !superUser ) { repondre(`This command is reserved for groups only.`) ; return ;}
+   
+  let isHentaiGroupe = await hdb.checkFromHentaiList(origineMessage) ;
+
+  if(!isHentaiGroupe && !superUser) { repondre(`This group is not a group of perverts, calm down my friend.`) ; return ;}
+
+  const url = 'https://api.waifu.pics/nsfw/neko'//apiWaifu("neko"); // Remplace avec ton lien réel
+
+  try { for (let i = 0 ;i < 5 ; i++) {
+    const response = await axios.get(url);
+    const imageUrl = response.data.url;
+
+    zk.sendMessage(origineMessage, { image: { url: imageUrl } }, { quoted: ms }); }
   } catch (error) {
-    console.error("Erreur lors de la suppression du groupe de la liste de hentai :", error);
-  } finally {
-    client.release();
+    repondre('Error occurred while retrieving the data. :', error);
   }
-}
+});
 
-module.exports = {
-  addToHentaiList,
-  checkFromHentaiList,
-  removeFromHentaiList,
-};
+
+zokou({
+  nomCom: "blowjob",
+  categorie: "Hentai",
+  reaction: "🙄"
+},
+async (origineMessage, zk, commandeOptions) => {
+  
+  const { repondre, ms ,verifGroupe , superUser} = commandeOptions;
+
+  if (!verifGroupe && !superUser ) { repondre(`This command is reserved for groups only.`) ; return ;}
+   
+  let isHentaiGroupe = await hdb.checkFromHentaiList(origineMessage) ;
+
+  if(!isHentaiGroupe && !superUser) { repondre(`This group is not a group of perverts, calm down my friend.`) ; return ;}
+
+  const url = 'https://api.waifu.pics/nsfw/blowjob'; // Remplace avec ton lien réel
+
+  try { for (let i = 0 ; i < 5 ; i++ ) {
+    const response = await axios.get(url);
+    const imageUrl = response.data.url;
+
+    zk.sendMessage(origineMessage, { image: { url: imageUrl } }, { quoted: ms }); }
+  } catch (error) {
+    repondre('Error occurred while retrieving the data. :', error);
+  }
+});
+
+
+
+zokou({
+  nomCom: "hentaivid",
+  categorie: "Hentai",
+  reaction: "🙄"
+},
+async (origineMessage, zk, commandeOptions) => {
+  const { repondre, ms ,verifGroupe , superUser} = commandeOptions;
+
+  if (!verifGroupe && !superUser ) { repondre(`This command is reserved for groups only.`) ; return ;}
+   
+  let isHentaiGroupe = await hdb.checkFromHentaiList(origineMessage) ;
+
+  if(!isHentaiGroupe && !superUser) { repondre(`This group is not a group of perverts, calm down my friend.`) ; return ;}
+
+  try {
+
+      let videos = await hentai()
+
+       let length ;
+
+        if (videos.length > 10) {
+            length = 10
+        } else {
+            length = videos.length ;
+        }
+
+      
+
+       let i = Math.floor(Math.random() * length) ;
+
+      zk.sendMessage(origineMessage,{video :{url : videos[i].video_1}, caption : `*Title :* ${videos[i].title} \n *Category :* ${videos[i].category}`},{quoted : ms})
+
+
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+
+
+
+
+
+
+async function hentai() {	
+  return new Promise((resolve, reject) => {	
+      const page = Math.floor(Math.random() * 1153)	
+      axios.get('https://sfmcompile.club/page/'+page)	
+      .then((data) => {	
+          const $ = cheerio.load(data.data)	
+          const hasil = []	
+          $('#primary > div > div > ul > li > article').each(function (a, b) {	
+              hasil.push({	
+                  title: $(b).find('header > h2').text(),	
+                  link: $(b).find('header > h2 > a').attr('href'),	
+                  category: $(b).find('header > div.entry-before-title > span > span').text().replace('in ', ''),	
+                  share_count: $(b).find('header > div.entry-after-title > p > span.entry-shares').text(),	
+                  views_count: $(b).find('header > div.entry-after-title > p > span.entry-views').text(),	
+                  type: $(b).find('source').attr('type') || 'image/jpeg',	
+                  video_1: $(b).find('source').attr('src') || $(b).find('img').attr('data-src'),	
+                   video_2: $(b).find('video > a').attr('href') || ''	
+              })	
+          })	
+          resolve(hasil) 	
+      })	
+  })	
+}
